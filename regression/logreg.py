@@ -22,13 +22,24 @@ class BaseRegressor():
         self.loss_hist_val = []
     
     def make_prediction(self, X):
-        raise NotImplementedError
+        # Linear combination of inputs and weights
+        z = np.dot(X, self.W)
+        # Logistic function
+        y_pred = 1 / (1 + np.exp(-z))
+        return y_pred
     
     def loss_function(self, y_true, y_pred):
-        raise NotImplementedError
+        # Binary cross-entropy loss
+        loss = -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+        return loss
         
     def calculate_gradient(self, y_true, X):
-        raise NotImplementedError
+        # Prediction error
+        y_pred = self.make_prediction(X)
+        error = y_pred - y_true
+        # Gradient of the loss function
+        grad = np.dot(X.T, error) / len(y_true)
+        return grad
     
     def train_model(self, X_train, y_train, X_val, y_val):
 
