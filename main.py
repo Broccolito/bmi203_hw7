@@ -38,7 +38,9 @@ def main():
     # For testing purposes, once you've added your code.
     # CAUTION: hyperparameters have not been optimized.
     print('Showing loss curve...')
-    log_model = logreg.LogisticRegressor(num_feats=6, learning_rate=0.00001, tol=0.01, max_iter=10, batch_size=10)
+    # Try different parameters to get the best number of iterations:
+    # learning rate of 0.1 and 10k max_iter
+    log_model = logreg.LogisticRegressor(num_feats=6, learning_rate=0.1, tol=0.01, max_iter=10000, batch_size=10)
     log_model.train_model(X_train, y_train, X_val, y_val)
     log_model.plot_loss_history()
 
