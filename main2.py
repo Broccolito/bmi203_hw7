@@ -20,80 +20,32 @@ from sklearn.metrics import log_loss
 from regression import LogisticRegressor
 
 
-# Helper function to generate synthetic data
-def generate_data(n_samples=100, n_features=2):
-    np.random.seed(42)  # For reproducibility
-    X = np.random.randn(n_samples, n_features)
-    coef = np.random.randn(n_features + 1)
-    intercept = coef[-1]
-    linear_combination = np.dot(X, coef[:-1]) + intercept
-    probabilities = 1 / (1 + np.exp(-linear_combination))
-    y = (probabilities >= 0.5).astype(int)
-    return X, y
+# Load data
+print('Loading data into the workspace...')
+X_train, X_val, y_train, y_val = utils.loadDataset(
+    features=[
+        'Penicillin V Potassium 500 MG',
+        'Computed tomography of chest and abdomen',
+        'Plain chest X-ray (procedure)',
+        'Low Density Lipoprotein Cholesterol',
+        'Creatinine',
+        'AGE_DIAGNOSIS'
+    ],
+    split_percent=0.8,
+    split_seed=42
+)
 
+# Scale the data, since values vary across feature. Note that we
+# fit on the training data and use the same scaler for X_val.
+print('Scaling the data...')
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_val = sc.transform(X_val)
 
-X, y = generate_data(10, 2)
-
-# Initialize and fit the logistic regression model
-model = LogisticRegression(fit_intercept=True, solver='lbfgs', max_iter=100)
-model.fit(X, y)
-
-# Make predictions
-predictions = model.predict_proba(X)[:, 1]  # Get the probability of the positive class
-
-# Calculate model loss (Log Loss/Binary Crossentropy)
-loss = log_loss(y, predictions)
-
-# Print out the model predictions and loss
-print("Model Predictions:", predictions)
-print("Model Loss:", loss)
-
-
-model = LogisticRegressor(num_feats=2)
-predictions = model.make_prediction(np.hstack([X, np.ones((X.shape[0], 1))]))  # Adding bias term manually
-
-print(predictions)
-
-loss = model.loss_function(y, predictions)
-print(loss)
-
-# def test_prediction():
-#     X, _ = generate_data(10, 2)  # Generating some test data
-#     model = LogisticRegressor(num_feats=2)
-#     predictions = model.make_prediction(np.hstack([X, np.ones((X.shape[0], 1))]))  # Adding bias term manually
-
-#     sk_model = LogisticRegression(fit_intercept=True, solver='lbfgs', max_iter=100)
-#     sk_model.fit(X[:,0].reshape(-1, 1), X[:,1].reshape(-1, 1))
-
-#     print(predictions)
-#     assert predictions.shape == (10,), "The prediction should have the same number of elements as the input samples."
-
-
-# def test_loss_function():
-#     X, y = generate_data(10, 2)
-#     model = LogisticRegressor(num_feats=2)
-#     predictions = model.make_prediction(np.hstack([X, np.ones((X.shape[0], 1))]))
-#     loss = model.loss_function(y, predictions)
-#     print(loss)
-#     assert isinstance(loss, float), "Loss should be a single floating-point number."
-
-
-# def test_gradient():
-#     X, y = generate_data(10, 2)
-#     model = LogisticRegressor(num_feats=2)
-#     gradient = model.calculate_gradient(y, np.hstack([X, np.ones((X.shape[0], 1))]))
-#     print(gradient)
-#     assert gradient.shape == (3,), "Gradient should have the same shape as the weight vector."
-
-
-# def test_training():
-#     X, y = generate_data(100, 2)  # Larger dataset for training
-#     model = LogisticRegressor(num_feats=2, max_iter=10)
-#     initial_weights = model.W.copy()
-#     model.train_model(X, y, X, y)  # Using the same dataset for validation for simplicity
-#     assert not np.array_equal(initial_weights, model.W), "Weights should be updated after training."
-
-
-# test_prediction()
-# test_loss_function()
-# test_gradient()
+# For testing purposes, once you've added your code.
+# CAUTION: hyperparameters have not been optimized.
+print('Showing loss curve...')
+log_model = logreg.LogisticRegressor(num_feats=6, learning_rate=0.00001, tol=0.01, max_iter=10, batch_size=10)
+log_model.train_model(X_train, y_train, X_val, y_val)
+print(log_model.loss_hist_val)
+print(log_model.loss_hist_train)
