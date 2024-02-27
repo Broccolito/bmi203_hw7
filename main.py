@@ -44,6 +44,15 @@ def main():
     log_model.train_model(X_train, y_train, X_val, y_val)
     log_model.plot_loss_history()
 
+    # Print Loss Values
+    # Last training loss
+    last_train_loss = log_model.loss_hist_train[-1]
+    print("Last training loss:", last_train_loss)
+    # Last validation loss
+    last_val_loss = log_model.loss_hist_val[-1]
+    print("Last validation loss:", last_val_loss)
+
+
 # Run main function if run as script
 if __name__ == "__main__":
     main()
