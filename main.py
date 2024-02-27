@@ -14,6 +14,7 @@ from sklearn.preprocessing import StandardScaler
 def main():
 
     # Load data
+    print('Loading data into the workspace...')
     X_train, X_val, y_train, y_val = utils.loadDataset(
         features=[
             'Penicillin V Potassium 500 MG',
@@ -29,15 +30,17 @@ def main():
 
     # Scale the data, since values vary across feature. Note that we
     # fit on the training data and use the same scaler for X_val.
+    print('Scaling the data...')
     sc = StandardScaler()
     X_train = sc.fit_transform(X_train)
     X_val = sc.transform(X_val)
 
     # For testing purposes, once you've added your code.
     # CAUTION: hyperparameters have not been optimized.
-    # log_model = logreg.LogisticRegressor(num_feats=6, learning_rate=0.00001, tol=0.01, max_iter=10, batch_size=10)
-    # log_model.train_model(X_train, y_train, X_val, y_val)
-    # log_model.plot_loss_history()
+    print('Showing loss curve...')
+    log_model = logreg.LogisticRegressor(num_feats=6, learning_rate=0.00001, tol=0.01, max_iter=10, batch_size=10)
+    log_model.train_model(X_train, y_train, X_val, y_val)
+    log_model.plot_loss_history()
 
 # Run main function if run as script
 if __name__ == "__main__":
